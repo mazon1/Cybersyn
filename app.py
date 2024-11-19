@@ -1,5 +1,5 @@
-# Import libraries
-from snowflake.snowpark.context import get_active_session
+# Import required libraries
+from snowflake.snowpark import Session
 from snowflake.snowpark.functions import sum, col, when, max, lag
 from snowflake.snowpark import Window
 from datetime import timedelta
@@ -7,15 +7,30 @@ import altair as alt
 import streamlit as st
 import pandas as pd
 
-# Set page config
+# Set Streamlit page configuration
 st.set_page_config(layout="wide")
 
-# Get current session
-session = get_active_session()
+# Load Snowflake connection settings from Streamlit secrets
+connection_parameters = {
+    "account": st.secrets["snowflake"]["account"],
+    "user": st.secrets["snowflake"]["user"],
+    "password": st.secrets["snowflake"]["password"],
+    "role": st.secrets["snowflake"]["role"],
+    "warehouse": st.secrets["snowflake"]["warehouse"],
+    "database": st.secrets["snowflake"]["database"],
+    "schema": st.secrets["snowflake"]["schema"],
+}
+
+# Create Snowflake session
+try:
+    session = Session.builder.configs(connection_parameters).create()
+    st.success("Snowflake session successfully created!")
+except Exception as e:
+    st.error(f"Error creating Snowflake session: {e}")
 
 @st.cache_data()
 def load_data():
-    # Load and transform daily stock price data.
+    # Load and transform daily stock price data
     snow_df_stocks = (
         session.table("FINANCE__ECONOMICS.CYBERSYN.STOCK_PRICE_TIMESERIES")
         .filter(
@@ -35,7 +50,7 @@ def load_data():
         lag(col("POSTMARKET_CLOSE"), 1).over(window_spec)
     )
 
-    # Load foreign exchange (FX) rates data.
+    # Load foreign exchange (FX) rates data
     snow_df_fx = session.table("FINANCE__ECONOMICS.CYBERSYN.FX_RATES_TIMESERIES").filter(
         (col('BASE_CURRENCY_ID') == 'EUR') & (col('DATE') >= '2019-01-01')).with_column_renamed('VARIABLE_NAME','EXCHANGE_RATE')
     
