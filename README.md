@@ -1,5 +1,5 @@
 # Cybersyn: Financial & Economic Essentials
-Stock Visualization App
+
 
 ## Overview
 This Streamlit app provides an interactive platform to analyze and visualize financial and economic data. With two main features—daily stock performance of major companies and exchange (FX) rates for key currencies—this app empowers users to gain insights and make data-driven decisions.
