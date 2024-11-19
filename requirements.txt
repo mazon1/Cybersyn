@@ -1,4 +1,3 @@
 streamlit
-altair
 snowflake.snowpark
 pandas
