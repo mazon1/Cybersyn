@@ -1,3 +1,4 @@
 streamlit
-snowflake.snowpark
+altair
+snowflake-snowpark-python
 pandas
